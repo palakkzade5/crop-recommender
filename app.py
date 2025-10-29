@@ -153,6 +153,7 @@ def predict():
     # your prediction logic here
     return "Prediction result"
 
-if __name__ == '__main__':
-    app.run()
+# 👇 remove app.run(), and add this line
+app = app
+
 
