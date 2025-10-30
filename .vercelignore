@@ -1,0 +1,13 @@
+# Ignore unnecessary files to keep the build small
+*.pkl
+*.csv
+*.ipynb
+__pycache__/
+*.pyc
+*.DS_Store
+*.zip
+*.tar
+*.gz
+*.venv
+venv/
+env/
