@@ -1,5 +1,4 @@
 # Ignore unnecessary files to keep the build small
-*.pkl
 *.csv
 *.ipynb
 __pycache__/
