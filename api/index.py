@@ -42,12 +42,19 @@ def predict():
     load_model()  # Load only when first requested
 
     try:
-        data = request.get_json()  # Get JSON input
+        data = request.get_json()
+        print("📩 Received data:", data)  # <--- Debug log
+
         if not data:
             return jsonify({"error": "No input data provided"}), 400
 
-        # Match frontend key names exactly
-        features = np.array([[
+        # Check all keys are present
+        required_keys = ["nitrogen", "phosphorus", "potassium", "temperature", "humidity", "ph", "rainfall"]
+        for key in required_keys:
+            if key not in data:
+                return jsonify({"error": f"Missing key: {key}"}), 400
+
+        features = np.array([
             data["nitrogen"],
             data["phosphorus"],
             data["potassium"],
@@ -55,9 +62,8 @@ def predict():
             data["humidity"],
             data["ph"],
             data["rainfall"]
-        ]])
+        ]).reshape(1, -1)
 
-        # Predict
         prediction = model.predict(features)
         predicted_crop = le.inverse_transform(prediction)[0]
 
@@ -67,11 +73,14 @@ def predict():
             "model_name": model_name,
             "accuracy": accuracy
         }
+
+        print("✅ Prediction result:", result)  # <--- Debug log
         return jsonify(result)
 
     except Exception as e:
         print("❌ Error during prediction:", e)
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
+
 
 
 # ✅ Health check route (optional, helps Vercel verify)
