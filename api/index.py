@@ -5,7 +5,7 @@ from io import BytesIO
 import numpy as np
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 CORS(app)
 
 # ✅ Model stored remotely on Hugging Face
