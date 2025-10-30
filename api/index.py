@@ -46,23 +46,24 @@ def predict():
         if not data:
             return jsonify({"error": "No input data provided"}), 400
 
-        # Expected input features (in order)
-        features = np.array([
-            data["N"],
-            data["P"],
-            data["K"],
+        # Match frontend key names exactly
+        features = np.array([[
+            data["nitrogen"],
+            data["phosphorus"],
+            data["potassium"],
             data["temperature"],
             data["humidity"],
             data["ph"],
             data["rainfall"]
-        ]).reshape(1, -1)
+        ]])
 
         # Predict
         prediction = model.predict(features)
         predicted_crop = le.inverse_transform(prediction)[0]
 
         result = {
-            "predicted_crop": predicted_crop,
+            "success": True,
+            "crop": predicted_crop,
             "model_name": model_name,
             "accuracy": accuracy
         }
@@ -70,7 +71,8 @@ def predict():
 
     except Exception as e:
         print("❌ Error during prediction:", e)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 # ✅ Health check route (optional, helps Vercel verify)
 @app.route("/health")
