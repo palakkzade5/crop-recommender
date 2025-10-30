@@ -338,78 +338,77 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
-        const form = document.getElementById('cropForm');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const resultSection = document.getElementById('resultSection');
-        const errorSection = document.getElementById('errorSection');
-        const predictBtn = document.getElementById('predictBtn');
+    const form = document.getElementById('cropForm');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultSection = document.getElementById('resultSection');
+    const errorSection = document.getElementById('errorSection');
+    const predictBtn = document.getElementById('predictBtn');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Hide previous results/errors
-            resultSection.style.display = 'none';
-            errorSection.style.display = 'none';
-            
-            // Show loading spinner
-            loadingSpinner.style.display = 'block';
-            predictBtn.disabled = true;
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Hide previous results/errors
+        resultSection.style.display = 'none';
+        errorSection.style.display = 'none';
+        
+        // Show loading spinner
+        loadingSpinner.style.display = 'block';
+        predictBtn.disabled = true;
 
-            // Get form data
-            const formData = {
-                nitrogen: parseFloat(document.getElementById('nitrogen').value),
-                phosphorus: parseFloat(document.getElementById('phosphorus').value),
-                potassium: parseFloat(document.getElementById('potassium').value),
-                temperature: parseFloat(document.getElementById('temperature').value),
-                humidity: parseFloat(document.getElementById('humidity').value),
-                ph: parseFloat(document.getElementById('ph').value),
-                rainfall: parseFloat(document.getElementById('rainfall').value)
-            };
+        // Get form data
+        const formData = {
+            nitrogen: parseFloat(document.getElementById('nitrogen').value),
+            phosphorus: parseFloat(document.getElementById('phosphorus').value),
+            potassium: parseFloat(document.getElementById('potassium').value),
+            temperature: parseFloat(document.getElementById('temperature').value),
+            humidity: parseFloat(document.getElementById('humidity').value),
+            ph: parseFloat(document.getElementById('ph').value),
+            rainfall: parseFloat(document.getElementById('rainfall').value)
+        };
 
-            try {
-                const response = await fetch('/api/predict', {
+        try {
+            const response = await fetch('https://crop-recommender-1.vercel.app/api/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
+            const data = await response.json();
 
-                const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('cropName').textContent = data.crop;
-                    
-                    if (data.confidence) {
-                        document.getElementById('confidence').textContent = 
-                            data.confidence.toFixed(2) + '%';
-                        document.getElementById('confidenceSection').style.display = 'block';
-                    } else {
-                        document.getElementById('confidenceSection').style.display = 'none';
-                    }
-                    
-                    resultSection.style.display = 'block';
+            if (data.success) {
+                document.getElementById('cropName').textContent = data.crop;
+                
+                if (data.confidence) {
+                    document.getElementById('confidence').textContent = 
+                        data.confidence.toFixed(2) + '%';
+                    document.getElementById('confidenceSection').style.display = 'block';
                 } else {
-                    showError(data.error || 'An unknown error occurred');
+                    document.getElementById('confidenceSection').style.display = 'none';
                 }
-            } catch (error) {
-                showError('Failed to connect to the server. Please try again.');
-                console.error('Error:', error);
-            } finally {
-                loadingSpinner.style.display = 'none';
-                predictBtn.disabled = false;
+                
+                resultSection.style.display = 'block';
+            } else {
+                showError(data.error || 'An unknown error occurred');
             }
-        });
-
-        function showError(message) {
-            document.getElementById('errorMessage').textContent = message;
-            errorSection.style.display = 'block';
+        } catch (error) {
+            showError('Failed to connect to the server. Please try again.');
+            console.error('Error:', error);
+        } finally {
+            loadingSpinner.style.display = 'none';
+            predictBtn.disabled = false;
         }
+    });
 
-        function hideError() {
-            errorSection.style.display = 'none';
-        }
-    </script>
+    function showError(message) {
+        document.getElementById('errorMessage').textContent = message;
+        errorSection.style.display = 'block';
+    }
+
+    function hideError() {
+        errorSection.style.display = 'none';
+    }
+</script>
 </body>
 </html>
