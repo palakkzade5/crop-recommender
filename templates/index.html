@@ -367,7 +367,7 @@
             };
 
             try {
-                const response = await fetch('/predict', {
+                const response = await fetch('https://crop-recommender-2bzi.vercel.app/predict', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
